@@ -13,6 +13,14 @@
   	var CanHeight=500;
   	var CanWidth=500;
   	var direction;
+  	/*
+		AXIS OF CANVAS
+		X AXIX -> increases from 0
+		
+		Y AXIS  ^
+				^  Decreases to 0
+				| 
+      */
   	snakeSeg={
           color:"sienna",
           width:15,
@@ -31,11 +39,70 @@
           ctx.restore();
           }
       };
+      oneStep=function(){
+for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards cuz otherwise
+  //all end up on one spot 
+  if(direction==0){//if left pressed
+  if(SnakeArr[0].x>0){
+
+
+  if (i==0) {
+    SnakeArr[0].x=SnakeArr[0].x-5;
+  } 
+  else{
+    SnakeArr[i].x=SnakeArr[i-1].x;//of previous segment
+    SnakeArr[i].y=SnakeArr[i-1].y;
+  }
+  }
+
+  }
+    else if (direction == 1) {//if pressed up
+
+          if(i==0){
+              SnakeArr[i].y=SnakeArr[i].y-5;
+            }
+            else{
+            SnakeArr[i].x=SnakeArr[i-1].x;
+            SnakeArr[i].y=SnakeArr[i-1].y;
+            }
+          }
+          else if (direction == 2) {
+
+          if(i==0){
+              SnakeArr[i].x=SnakeArr[i].x+5;
+            }
+            else{
+            SnakeArr[i].x=SnakeArr[i-1].x;
+            SnakeArr[i].y=SnakeArr[i-1].y;
+            }
+          }
+          else if (direction == 3) {
+
+          if(i==0){
+              SnakeArr[i].y=SnakeArr[i].y+5;
+            }
+            else{
+            SnakeArr[i].x=SnakeArr[i-1].x;
+            SnakeArr[i].y=SnakeArr[i-1].y;
+            }
+          } 
+}
+}
+mainFunct=function () {
+  ctx.clearRect(0,0,500,500);
+  for (var i = 0; i < SnakeArr.length; i++) {
+    drawSnake((SnakeArr[i].x),(SnakeArr[i].y),(i));
+  }
+  oneStep();
+  moving=true;
+  // body...
+}
       startGame=function () {//initialise snake body and food
         snakeBody=SnakeArr=[{x:230,y:200},{x:220,y:200},{x:210,y:200},{x:200,y:200},{x:190,y:200},{x:180,y:200},{x:170,y:200},{x:160,y:200},{x:150,y:200}];
         for (var i = 0; i < SnakeArr.length; i++) {
         drawSnake((SnakeArr[i].x),(SnakeArr[i].y),(i));
       }
+      myInt=setInterval(mainFunct,100);
     }
     startGame();
     document.onkeydown=function(event){
