@@ -16,6 +16,13 @@
   	var moving;
   	var eaten;
   	var score;
+    let SnakeArr=[{x:230,y:200},{x:220,y:200},{x:210,y:200},{x:200,y:200},{x:190,y:200},{x:180,y:200},{x:170,y:200},{x:160,y:200},{x:150,y:200}];
+    var SnakeArrLastIndex=8;
+    var SnakeArrLastInX;
+    var SnakeArrLastInY;
+    var SnakeArrAfterL=9;
+
+
   	var bG=document.querySelector("#ctx")//background
   	bG.style.background="url('https://images.unsplash.com/photo-1483354483454-4cd359948304?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80')";
   	bG.style.backgroundSize="500px 500px";
@@ -63,6 +70,9 @@
         }
         // body...
       }
+      function addSeg(x,y){
+        SnakeArr.push({x,y});
+      }
       drawScore=function(scoreG){
         ctx.save();
         ctx.font = "30px Comic Sans MS";
@@ -99,7 +109,7 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
             }
           }
       }
-          else if (direction == 2) {
+          else if (direction == 2) {//if right
           	if ((SnakeArr[0].x<485)) {
 
           if(i==0){
@@ -111,7 +121,7 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
             }
           }
       }
-          else if (direction == 3) {
+          else if (direction == 3) {//if down
           	if ((SnakeArr[0].y<485)) {
 
           if(i==0){
@@ -154,15 +164,28 @@ mainFunct=function () {
           //console.log(four);
           eaten=true;
           score=score+1;
+          if (eaten) {
+          SnakeArrLastInX=SnakeArr[SnakeArrLastIndex].x;
+          SnakeArrLastInY=SnakeArr[SnakeArrLastIndex].y;
+          addSeg(SnakeArrLastInX+10,SnakeArrLastInY+10);
+          //SnakeArr.push={x:(SnakeArrLastInX+10),y:(SnakeArrLastInY+10)};
+
+          SnakeArrLastIndex++;
+          SnakeArrAfterL++;
+          console.log("length increased");
+        }
 
         }
+        
   moving=true;
   // body...
 }
       startGame=function () {//initialise snake body and food
-        snakeBody=SnakeArr=[{x:230,y:200},{x:220,y:200},{x:210,y:200},{x:200,y:200},{x:190,y:200},{x:180,y:200},{x:170,y:200},{x:160,y:200},{x:150,y:200}];
+        
         score=0;
         eaten=false;
+        SnakArrLastIndex=8;
+        SnakeArrAfterL=9;
         foodList=[{x:100,y:100}];
         for (var i = 0; i < SnakeArr.length; i++) {
         drawSnake((SnakeArr[i].x),(SnakeArr[i].y),(i));
