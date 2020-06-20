@@ -13,6 +13,12 @@
   	var CanHeight=500;
   	var CanWidth=500;
   	var direction;
+  	var moving;
+  	var eaten;
+  	var score;
+  	var bG=document.querySelector("#ctx")//background
+  	bG.style.background="url('https://images.unsplash.com/photo-1483354483454-4cd359948304?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80')";
+  	bG.style.backgroundSize="500px 500px";
   	/*
 		AXIS OF CANVAS
 		X AXIX -> increases from 0
@@ -23,8 +29,8 @@
       */
   	snakeSeg={
           color:"sienna",
-          width:15,
-          height:15
+          width:13,
+          height:13
       };
       drawSnake = function (x,y,counter){ ;
           ctx.save();
@@ -39,6 +45,31 @@
           ctx.restore();
           }
       };
+      snakeFood={
+        color:"CadetBlue",
+        width:25,
+        height:25
+      };
+      drawFood=function(sf,counter) {
+        ctx.save();
+        if (counter==0) {
+          ctx.fillStyle=snakeFood.color;
+          ctx.beginPath();
+          ctx.arc(sf.x, sf.y, (snakeFood.width*0.3), 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.fill();
+          ctx.restore();
+        }
+        // body...
+      }
+      drawScore=function(scoreG){
+        ctx.save();
+        ctx.font = "30px Comic Sans MS";
+        ctx.fillStyle = "black";
+        ctx.fillText("Score: "+scoreG, 10, 50);
+        ctx.restore();
+      }
       oneStep=function(){
 for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards cuz otherwise
   //all end up on one spot 
@@ -56,7 +87,8 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
   }
 
   }
-    else if (direction == 1) {//if pressed up
+    else if (direction == 1) {
+    if(SnakeArr[0].y>0){//if pressed up
 
           if(i==0){
               SnakeArr[i].y=SnakeArr[i].y-5;
@@ -66,7 +98,9 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
             SnakeArr[i].y=SnakeArr[i-1].y;
             }
           }
+      }
           else if (direction == 2) {
+          	if ((SnakeArr[0].x<485)) {
 
           if(i==0){
               SnakeArr[i].x=SnakeArr[i].x+5;
@@ -76,7 +110,9 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
             SnakeArr[i].y=SnakeArr[i-1].y;
             }
           }
+      }
           else if (direction == 3) {
+          	if ((SnakeArr[0].y<485)) {
 
           if(i==0){
               SnakeArr[i].y=SnakeArr[i].y+5;
@@ -85,6 +121,7 @@ for (var i = SnakeArr.length-1; i >= 0; i--) {//bug for loop had to be backwards
             SnakeArr[i].x=SnakeArr[i-1].x;
             SnakeArr[i].y=SnakeArr[i-1].y;
             }
+          }
           } 
 }
 }
@@ -93,16 +130,44 @@ mainFunct=function () {
   for (var i = 0; i < SnakeArr.length; i++) {
     drawSnake((SnakeArr[i].x),(SnakeArr[i].y),(i));
   }
+  drawScore(score);
+  while(eaten){//to select new coordinate if ffod was eaten
+          foodX=(Math.random()*485)+5;
+          foodY=(Math.random()*485)+5;
+          foodList[0].x=foodX;
+          foodList[0].y=foodY;
+          eaten=false;
+        }
+        foodList.forEach(drawFood);
   oneStep();
+  one=SnakeArr[0].x-foodList[0].x;
+  two=foodList[0].x-SnakeArr[0].x;
+  three=SnakeArr[0].y-foodList[0].y;
+  four=foodList[0].y-SnakeArr[0].y;
+  if(((one<15&&one>0)||(two<15&&two>0))&&(((three)<15&&three>0)||(four<15&&four>0))){//if now head near food
+        // on next frame 
+          //food will appear some where else
+          //console.log("inside if of eaten");
+          //console.log(one);
+          //console.log(two);
+          //console.log(three);
+          //console.log(four);
+          eaten=true;
+          score=score+1;
+
+        }
   moving=true;
   // body...
 }
       startGame=function () {//initialise snake body and food
         snakeBody=SnakeArr=[{x:230,y:200},{x:220,y:200},{x:210,y:200},{x:200,y:200},{x:190,y:200},{x:180,y:200},{x:170,y:200},{x:160,y:200},{x:150,y:200}];
+        score=0;
+        eaten=false;
+        foodList=[{x:100,y:100}];
         for (var i = 0; i < SnakeArr.length; i++) {
         drawSnake((SnakeArr[i].x),(SnakeArr[i].y),(i));
       }
-      myInt=setInterval(mainFunct,100);
+      myInter=setInterval(mainFunct,50);
     }
     startGame();
     document.onkeydown=function(event){
@@ -130,7 +195,7 @@ mainFunct=function () {
         }
         else if ((event.keyCode==32)&&(moving==false)) {//created this to start game
         	console.log("spacebar to start");
-        	myInter=setInterval(mainFunct,100);
+        	myInter=setInterval(mainFunct,50);
         	moving=true;
         }
 
