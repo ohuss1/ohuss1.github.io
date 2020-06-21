@@ -67,9 +67,24 @@
           ctx.stroke();
           ctx.fill();
           ctx.restore();
-        }
-        // body...
+        }// body...
       }
+      // drawFood3=function(sf,counter){
+      //     ctx.save;
+      //     if (counter==0) {
+      //     var tag=cl.url("apple-clip-art-41.png", {width:220,height:277});
+      //     ctx.drawImage(tag, 50, 50, sf.x, sf.y);
+      //     ctx.restore();
+      //   }
+      // }
+        drawFood2=function(sf,counter) { 
+          ctx.save();
+            var img = document.createElement('img'); 
+            img.src =  'apple-clip-art-41.png';
+            ctx.drawImage(img, sf.x, sf.y, 30, 30);  
+            ctx.restore();
+        }
+
       function addSeg(x,y){
         SnakeArr.push({x,y});
       }
@@ -148,13 +163,21 @@ mainFunct=function () {
           foodList[0].y=foodY;
           eaten=false;
         }
-        foodList.forEach(drawFood);
+        if (score<100) {
+          foodList.forEach(drawFood);
+        } 
+        else {//apple
+          foodList.forEach(drawFood2);
+
+        }
+        
   oneStep();
   one=SnakeArr[0].x-foodList[0].x;
   two=foodList[0].x-SnakeArr[0].x;
   three=SnakeArr[0].y-foodList[0].y;
   four=foodList[0].y-SnakeArr[0].y;
-  if(((one<15&&one>0)||(two<15&&two>0))&&(((three)<15&&three>0)||(four<15&&four>0))){//if now head near food
+  if(score<100){//not apple score
+    if(((one<15&&one>0)||(two<15&&two>0))&&(((three)<15&&three>0)||(four<15&&four>0))){//if now head near food
         // on next frame 
           //food will appear some where else
           //console.log("inside if of eaten");
@@ -176,6 +199,34 @@ mainFunct=function () {
         }
 
         }
+
+  }
+  else{//apple
+    if(((one<20&&one>0)||(two<20&&two>0))&&(((three)<20&&three>0)||(four<20&&four>0))){//if now head near food
+        // on next frame 
+          //food will appear some where else
+          //console.log("inside if of eaten");
+          //console.log(one);
+          //console.log(two);
+          //console.log(three);
+          //console.log(four);
+          eaten=true;
+          score=score+5;
+          if (eaten) {
+          SnakeArrLastInX=SnakeArr[SnakeArrLastIndex].x;
+          SnakeArrLastInY=SnakeArr[SnakeArrLastIndex].y;
+          addSeg(SnakeArrLastInX+10,SnakeArrLastInY+10);
+          //SnakeArr.push={x:(SnakeArrLastInX+10),y:(SnakeArrLastInY+10)};
+
+          SnakeArrLastIndex++;
+          SnakeArrAfterL++;
+          console.log("length increased");
+        }
+
+        }
+
+  }
+  
         
   moving=true;
   // body...
