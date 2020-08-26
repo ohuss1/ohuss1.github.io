@@ -140,7 +140,8 @@ background-color:#ab9696;
         var movedUp=false;
         var movingUp=false;
         var foodEatingDistance=5;
-		var gameStart=false;//to only trigger the event if not started yet
+		var gameStart=false;//to only trigger the start event if not started yet
+		var straySnakeFix=false;//bug fix variable set true if scanning region started
 
         //Variables between this and above are for food region
         if(preMaxX<minX){
@@ -475,6 +476,7 @@ mainFunct=function () {//will get called every x millisecond
   //Below part we found region (ie.score>=20 we consider it significant for region accuracy) we are scanning food region
   //as we move down
   if((SnakeY<foodTableStats.maxY.value)&&(movingUp==false)&&(score>20)){
+  	straySnakeFix=true;
   	//region FOund!!
   	if(SnakeX>foodTableStats.maxX.value&&SnakeX<CanWidth && (movedDown==false)){
   	//console.log("yesss");
@@ -583,6 +585,13 @@ mainFunct=function () {//will get called every x millisecond
   }
   if(SnakeY<5 && score<=20){//reached top of canvas so have to scan down canvas for food.
   	movingUp=false;
+  }
+  if((straySnakeFix==true)&&((SnakeY<(foodTableStats.minY.value)-10)||(SnakeY>(foodTableStats.maxY.value)+10))&&(SnakeX<((CanWidth-10)))){
+  	diection=right;
+  	console.log("bug fixed");
+  	direction=right;
+  	straySnakeFix=false;
+
   }
 
 //above for high score part where goes to region found
