@@ -1,0 +1,291 @@
+<html>
+<head>
+
+</head>
+<body>
+<canvas height="600" width="600" id="ctx" style="border: 4px solid #cc6e6e;">
+	
+</canvas>
+
+<p id="demo"></p>
+
+<h4 id="twice"></h4>
+<form>
+  <div>
+    <label for="uname">Step 0 Please Type the numbers(not letters) up to 10 to sort separated by space: </label>
+    <input type="text" id="uname" name="name" required size="20" maxlength="29" 
+           pattern="([0-9]+\s+){0,9}[0-9.]{0,9}">
+    <!-- <span class="validity"></span> -->
+    <!-- <p>Usernames must be lowercase and 0-9 characters in length.</p> -->
+  </div>
+  <div>
+    <button type="button" onclick="saveUserInput();">Step1</button>
+    <!-- <button type="button" onclick="createNodesArray();">Step2</button> -->
+    <button type="button" onclick="mainfunction();">Step2</button>
+  </div>
+</form>
+
+<script type="text/javascript">
+	
+/*function myFunction() {
+  var numArg = prompt("Please enter the numbers you want to sort", " ");
+  var numArr=numArg.split(" ");
+  if (numArg != null) {
+    document.getElementById("demo").innerHTML=numArg;
+  }
+}*/
+var c = document.getElementById("ctx");
+var ctx = c.getContext("2d");
+var canHeight=600;
+var bG=document.querySelector("#ctx")//background
+        bG.style.background="url('https://images.unsplash.com/photo-1483354483454-4cd359948304?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80')";
+        bG.style.backgroundSize="600px 600px";
+var userIn="";
+var numArr="";//array of string numbers
+var NodesArray="";
+var counter=0;//for the tree traversal
+var currNode=0;
+var drawLoopCounter=0;
+var pressed1=false;
+var pressed2=false;
+var nodeDistance=35;
+var unsortedNum="";//x coordinates of each number from unsorted list displayed on canvas at the bottom will be used to highlight
+//the current element that is being sorted
+saveUserInput=function () {
+	// body...
+	pressed1=true;
+	userIn=document.getElementById("uname").value;
+	document.getElementById("demo").innerHTML=userIn;
+	numArr=userIn.split(" ");
+	unsortedNum=userIn.split(" ");
+	NodesArray=userIn.split(" ");
+	//converting the string to integer
+	for (var i = 0; i < numArr.length; i++) {
+		numArr[i]=parseInt(numArr[i]);
+		unsortedNum[i]=parseInt(unsortedNum[i]);//just in case cant store numbers in this array of string
+	}
+
+}
+
+//ADD NODE OBJECT AND ITS CREATE METHOD
+//MUST HAVE NODE LEFT CHILD RIGHT CHILD IN THAT METHOD
+//MUST HAVE NODE's stored NUMBER IN THAT OBJECT
+//AND A NODE ID
+//in JS A class is a type of function, but instead of using the keyword function to initiate it, we use the keyword class, and the properties are assigned inside a constructor() method.
+//I have added x,y so that I know where to draw its child that is relative to it on right or left
+class Node {
+  constructor(value,parentNode,rightChild,leftChild,nodeID,depth,xdrawn,ydrawn) {
+    this.value = null;
+    this.parentNode=null;//is an integer nodeid; I used actual node instead will change if needed
+    this.rightChild=null;//is an integer nodeid
+    this.leftChild=null;//is an integer nodeid
+    this.nodeID=null;//simply position in array.using it to identify nodes
+    this.depth=undefined;
+  }
+}
+//start from element 0 of array
+//set its value//
+//next if element < than its left child of parent...ie set parent of element 1 and set left child of element 0
+
+//Can use only draw but how to track depth array only has number so must have a tree object that i will keep updating to track depth
+
+//draw function will be called for each element of array...so basically loop through array and draw and fill tree at same time
+//1-
+createNodesArray=function () {
+	// body...
+//Below is our array of nodes ie tree
+//must happen after submission of numbers
+for (var i = 0; i < numArr.length; i++) {
+	
+	myNode=new Node();
+	myNode.nodeID=i;
+	myNode.value=numArr[i];
+	NodesArray[i]=myNode;
+
+}
+//currNode=new Node();//this shall be used for tree traversal
+currNode=0;//this is nodeid 0 will use it for traversal of tree.
+}
+//
+
+drawRightEdge=function(x,y,r,theta,overlap) {//x,y are necessary r and overlap only necessary if overlapped nodes so we place node
+ctx.save();
+x=(x + 10 * Math.cos(Math.PI * 45 / 180.0));
+y=y + 10 * Math.sin(45);
+if(overlap==false||overlap==null){
+r =  nodeDistance-10;
+}
+theta = 45;
+ctx.lineWidth=5;
+ctx.strokeStyle='green';
+ctx.moveTo(x, y);
+ctx.lineTo(x + r * Math.cos(Math.PI * theta / 180.0), y + r * Math.sin(theta));
+ctx.stroke();
+ctx.restore();
+}
+drawLeftEdge=function(x,y,r,theta,overlap) {//x,y are necessary r and overlap only necessary if overlapped nodes
+ctx.save()
+x=x+10 * Math.cos(Math.PI * 120 / 180.0);
+y=y+10 * Math.sin(120);
+if(overlap==false||overlap==null){
+r =  nodeDistance-5;
+}
+theta = 120;
+ctx.lineWidth=5;
+ctx.strokeStyle='blue'; 
+ctx.moveTo(x, y);
+ctx.lineTo(x + r * Math.cos(Math.PI * theta / 180.0), y + r * Math.sin(theta));
+ctx.stroke();
+ctx.restore();
+}
+drawNode=function (x,y,depth,right,left,nodeVal) {
+	// body...
+	ctx.save();
+	ctx.fillStyle="yellow";
+	ctx.beginPath();
+	ctx.arc(x, y, 15, 0, 2 * Math.PI);
+//x,y,startangle,end angle
+	ctx.fill();
+	ctx.restore();
+	ctx.save();
+    ctx.font = "15px Comic Sans MS";
+    ctx.fillStyle = "black";
+    ctx.fillText(nodeVal, x-5, y+5);
+    ctx.restore();
+}
+drawCurrentElement=function () {
+	//x will be unsortedNum[i]
+	ctx.beginPath();
+	ctx.strokeStyle="red";
+	ctx.rect(x, 550, 30, 30);
+	ctx.stroke();
+	// body...
+}
+//2-Lets loop array//must happen after step 2 so can use a trigger for this like putting in start function
+//Below is BST algorithm
+BST=function () {
+	for (var i = 0; i < numArr.length; i++) {
+	currNode=NodesArray[0].nodeID;//will update later just preset value. to traverse tree
+	if((i)==0){
+		NodesArray[0].value=numArr[i];
+		NodesArray[0].depth=0;
+		NodesArray[0].parent=null;
+		NodesArray[0].rightChild=null;
+		NodesArray[0].leftChild=null;
+		NodesArray[0].xdrawn=canHeight/2;//for others just based on parent change need at least a difference of 35
+		NodesArray[0].ydrawn=90;
+		console.log(NodesArray[i].value,NodesArray[currNode].value);
+		
+	}
+	else if(((numArr[i]>=numArr[0]) && (NodesArray[0].rightChild===null))||((numArr[i]<numArr[0]) && (NodesArray[0].leftChild===null))){
+	if((numArr[i]>=numArr[0]) && (NodesArray[0].rightChild===null)){
+		NodesArray[0].rightChild=NodesArray[i].nodeID;
+		NodesArray[i].parent=NodesArray[0].nodeID;
+		NodesArray[i].xdrawn=NodesArray[0].xdrawn+nodeDistance;//setting coordinates of right child of root
+		NodesArray[i].ydrawn=NodesArray[0].ydrawn+nodeDistance;
+		console.log(NodesArray[i].value,NodesArray[currNode].value);
+	}
+	if((NodesArray[i].value<numArr[0]) && (NodesArray[0].leftChild===null)){
+		NodesArray[0].leftChild=NodesArray[i].nodeID;
+		NodesArray[i].parent=NodesArray[0].nodeID;
+		NodesArray[i].xdrawn=NodesArray[0].xdrawn-nodeDistance;//setting coordinates of left child of root
+		NodesArray[i].ydrawn=NodesArray[0].ydrawn+nodeDistance;
+		console.log(NodesArray[i].value,NodesArray[currNode].value);
+	}
+	} 
+	else{
+	//Check if this numArr[i] is greater or less then NodesArray[counter] and keep going deeper keep checking until reach child null
+	//keep changing the current node to child node to go deeper
+	//NEED TO CHANGE CURRENT NODE WAS NODE THEN BECAME NODEID int
+	while(currNode!=null){
+	if(numArr[i]<NodesArray[currNode].value){
+	if(NodesArray[currNode].leftChild===null){
+	NodesArray[currNode].leftChild=NodesArray[i].nodeID;//set left child of currNode to the ith NodesArray element
+	NodesArray[i].xdrawn=NodesArray[currNode].xdrawn-nodeDistance;
+	//setting x coordinates of the node inserted based on corrdinates of parent
+	NodesArray[i].ydrawn=NodesArray[currNode].ydrawn+nodeDistance;//setting y coordinates of the node inserted based on corrdinates of parent
+	NodesArray[i].parent=NodesArray[currNode];//making parent of the node we inserted to point at currNode
+	currNode=null;//to end while loop
+	console.log(NodesArray[i].value,"null");
+	}
+	else if(NodesArray[currNode].leftChild!=null){
+	currNode=NodesArray[currNode].leftChild;
+	console.log(NodesArray[i].value,NodesArray[currNode].value);
+	}
+	
+	}
+	else if(numArr[i]>=NodesArray[currNode].value){
+	if(NodesArray[currNode].rightChild===null){
+	NodesArray[currNode].rightChild=NodesArray[i].nodeID;//set right child of currNode to the ith NodesArray element
+	NodesArray[i].xdrawn=NodesArray[currNode].xdrawn+nodeDistance;//setting x coordinates of the node inserted based on corrdinates of parent
+	NodesArray[i].ydrawn=NodesArray[currNode].ydrawn+nodeDistance;//setting y coordinates of the node inserted based on corrdinates of parent
+	//need to set parent this node to curr node
+	NodesArray[i].parent=NodesArray[currNode];
+	currNode=null;//to end while loop
+	console.log(NodesArray[i].value,"null");
+	}
+	else if(NodesArray[currNode].rightChild!=null){
+	currNode=NodesArray[currNode].rightChild;
+	console.log(NodesArray[i].value,NodesArray[currNode].value);
+	}
+	}
+	}
+	//have reached the spot where we put our node
+	//NodesArray[currNode.parent]
+	}
+}
+
+//3-Below we draw our BST tree NEED to trigger as event or put whole thing inside a mainfunction
+// for (var i = 0; i < NodesArray.length; i++) {
+// 	drawNode(NodesArray[i].xdrawn,NodesArray[i].ydrawn,null,null,null,numArr[i]);
+// }
+var intervalId = setInterval(function(){
+   if(drawLoopCounter == NodesArray.length-1){
+   	console.log("clearing");
+   	clearInterval(intervalId);
+   }
+   console.log(drawLoopCounter);
+   drawNode(NodesArray[drawLoopCounter].xdrawn,NodesArray[drawLoopCounter].ydrawn,null,null,null,numArr[drawLoopCounter]);
+   if(NodesArray[drawLoopCounter].rightChild!==null){
+   	drawRightEdge(NodesArray[drawLoopCounter].xdrawn,NodesArray[drawLoopCounter].ydrawn,10,10,false);
+   }
+   if(NodesArray[drawLoopCounter].leftChild!==null){
+   	drawLeftEdge(NodesArray[drawLoopCounter].xdrawn,NodesArray[drawLoopCounter].ydrawn,10,10,false);
+   }
+   drawLoopCounter++;
+}, 900);
+	// body...
+}
+mainfunction=function() {
+	if((pressed2==false)&&(pressed1==true)){
+		pressed2=true;
+		pressed1=false;//to prevent from launching mainfunction
+		ctx.save();
+        ctx.font = "15px Comic Sans MS";
+        ctx.fillStyle = "black";
+        console.log("inside main");
+        ctx.fillText("Numbers to sort", 0, canHeight-20);
+        ctx.restore();
+        for (var i = 0; i < numArr.length; i++) {
+        	ctx.save();
+		    ctx.font = "35px Comic Sans MS";
+            ctx.fillStyle = "black";
+            unsortedNum[i]=150+(i*40);
+            ctx.fillText(numArr[i],150+(i*40),canHeight-20);
+            ctx.restore();
+        }
+        ctx.restore();
+		createNodesArray();
+		BST();
+	}
+	else{
+		document.getElementById("twice").innerHTML="Please refresh page and start over if you want to test new Nodes(Please dont press buttons twice)";
+	}
+	
+}
+//4-create BST and treesort functions and call BST functions and treeSort functions in a function called startGame. Startgame 
+//should be triggerred by an event
+</script>
+
+</body>
+</html>
