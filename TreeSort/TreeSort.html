@@ -51,6 +51,7 @@ var pressed2=false;
 var nodeDistance=35;
 var unsortedNum="";//x coordinates of each number from unsorted list displayed on canvas at the bottom will be used to highlight
 //the current element that is being sorted
+var drawUnsortedCounter=0;
 saveUserInput=function () {
 	// body...
 	pressed1=true;
@@ -270,8 +271,20 @@ mainfunction=function() {
         	ctx.save();
 		    ctx.font = "35px Comic Sans MS";
             ctx.fillStyle = "black";
-            unsortedNum[i]=150+(i*40);
-            ctx.fillText(numArr[i],150+(i*40),canHeight-20);
+            if (numArr[i]>9) {
+            	console.log("inside if");
+            	unsortedNum[i]=150+(drawUnsortedCounter*40);
+            	ctx.fillText(numArr[i],150+(drawUnsortedCounter*40),canHeight-20);
+            	//ctx.fillText(" ",150+((drawUnsortedCounter+1)*40),canHeight-20);
+            	drawUnsortedCounter++;
+            	drawUnsortedCounter++;
+            }
+            else{
+            	unsortedNum[i]=150+(drawUnsortedCounter*40);
+            	ctx.fillText(numArr[i],150+(drawUnsortedCounter*40),canHeight-20);
+            	drawUnsortedCounter++;
+            }
+            
             ctx.restore();
         }
         ctx.restore();
