@@ -36,16 +36,16 @@
   	<th>
   		Numbers to Sort
   	</th>
-    <td id="col1">nmn</td>
-    <td id="col2">mn</td>
-    <td id="col3">nm</td>
-    <td id="col4">nm</td>
-    <td id="col5">Maria</td>
-    <td id="col6">Ge</td>
-    <td id="col7">Alfe</td>
-    <td id="col8">Al</td>
-    <td id="col9">Alf</td>
-    <td id="col10">A</td>
+    <td id="col1">_</td>
+    <td id="col2">_</td>
+    <td id="col3">_</td>
+    <td id="col4">_</td>
+    <td id="col5">_</td>
+    <td id="col6">_</td>
+    <td id="col7">_</td>
+    <td id="col8">_</td>
+    <td id="col9">_</td>
+    <td id="col10">_</td>
   </tr>
 </table>
 	</div>
@@ -102,11 +102,12 @@ var InOrderTraversalSlot="";//will be used to store the slot numbers of NodeArra
 
 var InOrderTraversalCounter=0;//will be used to count what node from unsortedNum array to replace with sorted number
 var InOrderCounter2=0;//will be used by InOrderTraversalSlot in the InOrderTraversal function
+var BSTend=false;//drawCurrentnode running with tree draw so I need this
 saveUserInput=function () {
 	// body...
 	pressed1=true;
 	userIn=document.getElementById("uname").value;
-	document.getElementById("demo").innerHTML=userIn;
+	document.getElementById("demo").innerHTML="Entered values: "+userIn;
 	numArr=userIn.split(" ");
 	unsortedNum=userIn.split(" ");
 	NodesArray=userIn.split(" ");
@@ -116,6 +117,18 @@ saveUserInput=function () {
 		numArr[i]=parseInt(numArr[i]);
 		unsortedNum[i]=parseInt(unsortedNum[i]);//just in case cant store numbers in this array of string
 		InOrderTraversalSlot[i]=parseInt(unsortedNum[i]);;
+	}
+	if(isNaN(numArr[numArr.length-1])){//for validation I am using this instead...button submit prevented from being saved into variables
+		//console.log("invalid input");
+		document.getElementById("twice").innerHTML="Invalid Input do not put space after the last number Pls refresh page and start over";
+		pressed1=false;
+	}
+	for (var i = 0; i < numArr.length; i++) {//for validation I am using this instead...button submit prevented from being saved into variables
+		if(isNaN(numArr[i])||(numArr.length>10)){
+			document.getElementById("twice").innerHTML="Invalid Input do not put space after the last 10th number and no letters Pls refresh page and start over";
+			pressed1=false;
+			break;
+		}
 	}
 
 }
@@ -206,11 +219,11 @@ drawNode=function (x,y,depth,right,left,nodeVal) {
     ctx.fillText(nodeVal, x-5, y+5);
     ctx.restore();
 }
-drawCurrentElement=function () {
+drawCurrentElement=function (NodeB) {//to draw rectangle on current nodes
 	//x will be unsortedNum[i]
 	ctx.beginPath();
 	ctx.strokeStyle="red";
-	ctx.rect(x, 550, 30, 30);
+	ctx.rect(NodeB.xdrawn-15, NodeB.ydrawn-15, 40, 40);
 	ctx.stroke();
 	// body...
 }
@@ -292,7 +305,7 @@ BST=function () {
 // for (var i = 0; i < NodesArray.length; i++) {
 // 	drawNode(NodesArray[i].xdrawn,NodesArray[i].ydrawn,null,null,null,numArr[i]);
 // }
-var intervalId = setInterval(function(){
+var intervalId = setInterval(function(){//responsible for drawing the tree using helpers THIS IS INSIDE BST which is called in mainfunction
    if(drawLoopCounter == NodesArray.length-1){
    	console.log("clearing");
    	clearInterval(intervalId);
@@ -308,8 +321,9 @@ var intervalId = setInterval(function(){
    drawLoopCounter++;
 }, 900);
 	// body...
+	BSTend=true;
 }
-InOrderTraversal=function(NodeA){
+InOrderTraversal=function(NodeA){//UnUsed since Doesnt have delay
 	if (NodeA!=null||NodeA!=undefined) {
 		//I shall store sorted numbers in an array first then loop through this array in slow mo and change each table element
 		//and highlight at the current tree node //since using setTimeout in recursion caused problems
@@ -323,12 +337,61 @@ InOrderTraversal=function(NodeA){
 		InOrderTraversal(NodesArray[(NodeA.leftChild)]);
 
 		unsortedNum[InOrderTraversalCounter]=NodeA.value;//storing sorted results in array
+
 		InOrderTraversalCounter++;
 
 		InOrderTraversal(NodesArray[(NodeA.rightChild)]);
 	}
 }
+InOrderTraversalStackVersion=function(NodeB){//NodeB shall be root Node when function called
+	//our "stack" shall be an empty array (in javascript size doesnt need to be defined)
+	var stack=[];
+	var counterTraversal=0;//to change table values
+	// while((stack.length!=0)||NodeB!=null){
+	// 	if(NodeB!=null){
+	// 		stack.push(NodeB);
+	// 		console.log("Current Node"+NodeB.value);
+	// 		drawCurrentElement(NodeB);
+	// 		NodeB=NodesArray[NodeB.leftChild];//ie we keep going left until leftchild null
+	// 	}
+	// 	else{
+	// 		//left child is null so wanna return to root//by popping thelast stored element we return to its root the non null
+	// 		// in the stack
+	// 		//after visiting root wanna visit its right child so we push right child on to stack
+	// 		NodeB=stack.pop();
+	// 		console.log("Smalles One "+NodeB.value);
+	// 		NodeB=NodesArray[NodeB.rightChild];//if this is null then again pop will come into action
+
+	// 	}
+	// }
+	var delayedLoop = setInterval(function(){//my delayed while loop
+		if((stack.length==0)&&NodeB==null){
+			clearInterval(delayedLoop);
+		}
+		else{
+			if(NodeB!=null){
+			stack.push(NodeB);
+			console.log("Current Node"+NodeB.value);
+			drawCurrentElement(NodeB);
+			NodeB=NodesArray[NodeB.leftChild];//ie we keep going left until leftchild null
+		}
+		else{
+			//left child is null so wanna return to root//by popping thelast stored element we return to its root the non null
+			// in the stack
+			//after visiting root wanna visit its right child so we push right child on to stack
+			NodeB=stack.pop();
+			console.log("Smalles One "+NodeB.value);
+			document.getElementById("Stats").rows[0].cells[counterTraversal+1].bgColor="grey";//sorted number colored
+			document.getElementById("Stats").rows[0].cells[counterTraversal+1].innerHTML=NodeB.value;
+			counterTraversal++;
+			NodeB=NodesArray[NodeB.rightChild];//if this is null then again pop will come into action
+		}
+
+		}
+	}, 900);
+}
 mainfunction=function() {
+	//var end=false;
 	if((pressed2==false)&&(pressed1==true)){
 		pressed2=true;
 		pressed1=false;//to prevent from launching mainfunction
@@ -341,6 +404,12 @@ mainfunction=function() {
         ctx.restore();
 		createNodesArray();
 		BST();
+		setTimeout(function(){ InOrderTraversalStackVersion(NodesArray[0]); }, 8000);
+		// if(BSTend==true){
+		// 	InOrderTraversalStackVersion(NodesArray[0]);
+		// }
+		////sorts table according to inorder traversal results and 
+		//draws rectangel on current node
 	}
 	else{
 		document.getElementById("twice").innerHTML="Please refresh page and start over if you want to test new Nodes(Please dont press buttons twice)";
